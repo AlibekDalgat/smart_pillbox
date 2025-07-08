@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: yii2-php
+    volumes:
+      - ./app:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - yii2-network
+
+  mysql:
+    image: mysql:8
+    container_name: yii2-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: yii2app
+      MYSQL_USER: yii2user
+      MYSQL_PASSWORD: yii2password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - yii2-network
+
+networks:
+  yii2-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
