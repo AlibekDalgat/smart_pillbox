@@ -69,4 +69,52 @@ class ApiController extends Controller
         return ['errors' => $model->errors];
     }
 
+    public function actionReminderIndex()
+    {
+        $today = date('Y-m-d');
+        return Reminder::find()
+            ->where(['<=', 'begin_date', $today])
+            ->andWhere(['>=', 'finish_date', $today])
+            ->all();
+    }
+
+    public function actionReminderCreate()
+    {
+        $model = new Reminder();
+        $model->created_at = time();
+        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
+            return $model;
+        }
+        Yii::$app->response->setStatusCode(422);
+        return ['errors' => $model->errors];
+    }
+
+    public function actionReminderTake($id)
+    {
+        $reminder = Reminder::findOne($id);
+        if (!$reminder || $reminder->medicine->user_id !== Yii::$app->user->id) {
+            Yii::$app->response->setStatusCode(404);
+            return ['error' => 'Reminder not found'];
+        }
+        $log = new ReminderLog();
+        $log->reminder_id = $id;
+        $log->taken_at = time();
+        $log->created_at = time();
+        if ($log->save()) {
+            return ['status' => 'success'];
+        }
+        Yii::$app->response->setStatusCode(422);
+        return ['errors' => $log->errors];
+    }
+
+    public function actionReminderDelete($id)
+    {
+        $reminder = Reminder::findOne($id);
+        if (!$reminder || $reminder->medicine->user_id !== Yii::$app->user->id) {
+            Yii::$app->response->setStatusCode(404);
+            return ['error' => 'Reminder not found'];
+        }
+        $reminder->delete();
+        return ['status' => 'success'];
+    }
 }
