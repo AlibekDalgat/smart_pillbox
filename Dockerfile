@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libzip-dev \
     default-mysql-client \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions required by Yii2
@@ -24,6 +25,9 @@ RUN composer create-project --prefer-dist --no-interaction yiisoft/yii2-app-basi
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+COPY cron/reminder /etc/cron.d/reminder
+RUN chmod 0644 /etc/cron.d/reminder
 
 # Expose port for PHP built-in server
 EXPOSE 8080

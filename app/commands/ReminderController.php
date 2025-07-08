@@ -1,5 +1,4 @@
 <?php
-
 namespace app\commands;
 
 use Yii;
@@ -21,19 +20,27 @@ class ReminderController extends Controller
             ->all();
 
         foreach ($reminders as $reminder) {
-            $times = json_decode($reminder->time, true);
+            $times = is_array($reminder->time) ? $reminder->time : json_decode($reminder->time, true);
+            if (!is_array($times)) {
+                Yii::error("Invalid time format for reminder ID: {$reminder->id}", 'reminder');
+                continue;
+            }
             foreach ($times as $time) {
-                // Проверяем, наступило ли время напоминания (в пределах 10 минут)
                 $reminderTime = \DateTime::createFromFormat('H:i', $time);
-                $diff = abs($now->getTimestamp() - $reminderTime->setDate($now->getYear(), $now->getMonth(), $now->getDay())->getTimestamp()) / 60;
+                if (!$reminderTime) {
+                    Yii::error("Invalid time format '{$time}' for reminder ID: {$reminder->id}", 'reminder');
+                    continue;
+                }
+                $reminderTime->setDate((int)$now->format('Y'), (int)$now->format('m'), (int)$now->format('d'));
+                $diff = abs($now->getTimestamp() - $reminderTime->getTimestamp()) / 60;
                 if ($diff <= 10) {
-                    // Проверяем, не был ли приём уже отмечен
                     $taken = ReminderLog::find()
                         ->where(['reminder_id' => $reminder->id])
                         ->andWhere(['>=', 'taken_at', strtotime($today . ' 00:00:00')])
                         ->andWhere(['<=', 'taken_at', strtotime($today . ' 23:59:59')])
                         ->exists();
                     if (!$taken) {
+                        //echo "Напоминание: Пора принять {$reminder->medicine->name} в {$time} (ID: {$reminder->id})";
                         Yii::info("Напоминание: Пора принять {$reminder->medicine->name} в {$time} (ID: {$reminder->id})", 'reminder');
                     }
                 }
