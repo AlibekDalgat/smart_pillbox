@@ -14,6 +14,8 @@ services:
       - mysql
     networks:
       - yii2-network
+    environment:
+      - TZ=Europe/Moscow
 
   mysql:
     image: mysql:8
@@ -23,6 +25,7 @@ services:
       MYSQL_DATABASE: yii2app
       MYSQL_USER: yii2user
       MYSQL_PASSWORD: yii2password
+      TZ: Europe/Moscow
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
