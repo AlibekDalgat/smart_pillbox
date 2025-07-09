@@ -22,12 +22,12 @@ WORKDIR /app
 # Install Yii2 basic application template
 RUN composer create-project --prefer-dist --no-interaction yiisoft/yii2-app-basic /app
 
+COPY php.ini /usr/local/etc/php/php.ini
+
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 COPY cron/reminder /etc/cron.d/reminder
-RUN chmod 0644 /etc/cron.d/reminder
+RUN chmod +x /entrypoint.sh
 
 # Expose port for PHP built-in server
 EXPOSE 8080
