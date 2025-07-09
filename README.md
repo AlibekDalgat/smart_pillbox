@@ -39,11 +39,11 @@ make migrate
 ```
 Добавление тестового пользователя
 ```
-add-test-user
+make add-test-user
 ```
 Ручной запуск консольной команды для уведомления пользователей о приёме (логи о напоминании в app/runtime/logs/app.log)
 ```
-remind
+make remind
 ```
 
 # Примеры
@@ -68,7 +68,7 @@ curl --location --request POST 'localhost:8080/api/login' \
     }
 }
 ```
-
+⚠️ для дальнейших запросов использовать полученный выше токен
 ### 2. POST /api/medicines
 **Запрос:**
 ```
