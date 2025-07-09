@@ -54,7 +54,17 @@ class ApiController extends Controller
 
     public function actionMedicineIndex()
     {
-        return Medicine::find()->where(['user_id' => Yii::$app->user->id])->all();
+        $medicines = Medicine::find()->where(['user_id' => Yii::$app->user->id])->all();
+        $result = [];
+        foreach ($medicines as $medicine) {
+            $result[] = [
+                'id' => $medicine->id,
+                'name' => $medicine->name,
+                'dose' => $medicine->dose,
+                'description' => $medicine->description,
+            ];
+        }
+        return $result;
     }
 
     public function actionMedicineCreate()
@@ -71,11 +81,18 @@ class ApiController extends Controller
 
     public function actionReminderIndex()
     {
-        $today = date('Y-m-d');
-        return Reminder::find()
-            ->where(['<=', 'begin_date', $today])
-            ->andWhere(['>=', 'finish_date', $today])
-            ->all();
+        $reminders = Reminder::find()->where(['medicine_id' => Medicine::find()->select('id')->where(['user_id' => Yii::$app->user->id])])->all();
+        $result = [];
+        foreach ($reminders as $reminder) {
+            $result[] = [
+                'medicine_id' => $reminder->medicine_id,
+                'time' => is_array($reminder->time) ? $reminder->time : json_decode($reminder->time, true),
+                'begin_date' => $reminder->begin_date,
+                'finish_date' => $reminder->finish_date,
+                'comment' => $reminder->comment,
+            ];
+        }
+        return $result;
     }
 
     public function actionReminderCreate()
