@@ -40,7 +40,6 @@ class ReminderController extends Controller
                         ->andWhere(['<=', 'taken_at', strtotime($today . ' 23:59:59')])
                         ->exists();
                     if (!$taken) {
-                        //echo "Напоминание: Пора принять {$reminder->medicine->name} в {$time} (ID: {$reminder->id})";
                         Yii::info("Напоминание: Пора принять {$reminder->medicine->name} в {$time} (ID: {$reminder->id})", 'reminder');
                     }
                 }
