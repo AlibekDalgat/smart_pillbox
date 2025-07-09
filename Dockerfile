@@ -19,19 +19,15 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set working directory
 WORKDIR /app
 
-# Install Yii2 basic application template
 RUN composer create-project --prefer-dist --no-interaction yiisoft/yii2-app-basic /app
 
 COPY php.ini /usr/local/etc/php/php.ini
 
-# Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 COPY cron/reminder /etc/cron.d/reminder
 RUN chmod +x /entrypoint.sh
 
-# Expose port for PHP built-in server
 EXPOSE 8080
 
-# Use entrypoint to allow running PHP server or other commands
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php", "-S", "0.0.0.0:8080", "-t", "/app/web", "/app/web/index.php"]

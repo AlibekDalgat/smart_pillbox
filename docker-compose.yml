@@ -26,6 +26,7 @@ services:
       MYSQL_USER: yii2user
       MYSQL_PASSWORD: yii2password
       TZ: Europe/Moscow
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
